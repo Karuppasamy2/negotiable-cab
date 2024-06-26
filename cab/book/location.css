@@ -1,0 +1,73 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box; /* Ensure padding and border don't add to element's width */
+}
+
+body {
+    min-height: 100vh;
+    background-color: bisque;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px; /* Adjust vertical spacing */
+}
+
+.css {
+    text-align: center; /* Center the form */
+    margin-top: 20px; /* Adjust vertical spacing */
+}
+
+.css label {
+    display: block; /* Ensure labels appear on new lines */
+    margin-bottom: 5px; /* Add spacing between labels and inputs */
+}
+
+.css input[type="text"] {
+    width: 100%; /* Make inputs fill their container */
+    padding: 8px; /* Add padding for better appearance */
+    margin-bottom: 10px; /* Add spacing between inputs */
+}
+#googleMap{
+    width: 80%;
+    height: 400%;
+    margin: 20px auto;
+}
+#myMap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Set the width to 100% to ensure it takes the full width of its container */
+    height: 400px;
+    margin: 0 auto;
+}
+
+#confirmorder{background:red;
+    color:rgb(21, 1, 1);
+    text-decoration: none;
+    padding: 5px 30px;
+    margin-left: 85%;
+}
+#output{
+    background-color: aliceblue;
+}
+@media screen and (min-width: 800px) {
+    /* Apply styles for larger screens */
+    .css {
+        max-width: 400px; /* Limit form width on larger screens */
+        margin: 20px auto; /* Center the form horizontally */
+        padding: 20px; /* Add padding to the form */
+        border: 2px solid #ccc; /* Add border for better visibility */
+        border-radius: 5px; /* Add rounded corners */
+        background-color: #fff; /* Add white background */
+    }
+}
+button:hover{
+    background:yellow; 
+
+}

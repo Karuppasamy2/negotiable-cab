@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location</title>
+    <link rel="stylesheet" href="location.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;600&display=swap');
+    </style>
+    <?php 
+    // Initialize $car and $driver variables if they're not set
+    $car = isset($_GET['car']) ? $_GET['car'] : 'default';
+    $driver = isset($_GET['driver']) ? $_GET['driver'] : 'default';
+    ?>
+    <script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap' async defer></script>
+    <script type='text/javascript'>
+        function GetMap() {
+            var costPerKm = 0;
+            var distance = 0;
+            var duration = 0;
+            var money = 0;
+            var hours = 0;
+            var minutes = 0;
+            var status=0;
+            var from="";
+            var to="";
+
+            var map = new Microsoft.Maps.Map('#myMap', {
+                credentials: '',
+                center: new Microsoft.Maps.Location(9.9252, 78.1198),
+                zoom: 7
+            });
+
+            Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
+                var directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+                document.getElementById('routeButton').addEventListener('click', function () {
+                    directionsManager.clearAll();
+                    directionsManager.setRequestOptions({ routeMode: Microsoft.Maps.Directions.RouteMode.driving });
+                    var from = new Microsoft.Maps.Directions.Waypoint({ address: document.getElementById('from').value });
+                    var to = new Microsoft.Maps.Directions.Waypoint({ address: document.getElementById('to').value });
+                    directionsManager.addWaypoint(from);
+                    directionsManager.addWaypoint(to);
+                    directionsManager.calculateDirections();
+                });
+
+                Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', function (args) {
+                    var routeSummary = args.routeSummary[0];
+                    distance = routeSummary.distance; // No need to convert to kilometers
+                    duration = routeSummary.time;
+                    hours = Math.floor(duration / 3600);
+                    minutes = Math.floor((duration % 3600) / 60); 
+                    from = document.getElementById('from').value;
+                    to = document.getElementById('to').value;
+                    status=1;
+                    switch ("<?php echo $car; ?>") {
+                        case 'audi':
+                            costPerKm = 20 * distance; // Convert to kilometers
+                            break;
+                        case 'benz':
+                            costPerKm = 19 * distance; // Convert to kilometers
+                            break;
+                        case 'bmw':
+                            costPerKm = 17 * distance; // Convert to kilometers
+                            break;
+                        case 'swift':
+                            costPerKm = 16 * distance; // Convert to kilometers
+                            break;
+                        default:
+                            costPerKm = 15 * distance; // Convert to kilometers
+                    }
+
+                    money = costPerKm.toFixed(2);
+
+                    document.getElementById('output').innerHTML = 'Distance: ' + (distance).toFixed(2) + ' km<br>Duration: ' + hours + ' hours ' + minutes + ' minutes<br>Total charge: ' + money;
+                    document.getElementById('output').style.display = 'block'; // Show the output
+                    document.getElementById('distance').value = (distance).toFixed(2);
+                    document.getElementById('hours').value = hours;
+                    document.getElementById('minutes').value = minutes;
+                    document.getElementById('money').value = money;
+                    document.getElementById('from').value = from;
+                    document.getElementById('to').value = to;
+                    document.getElementById('status').value = status;
+                });
+
+                Microsoft.Maps.Events.addHandler(directionsManager, 'directionsError', function (e) {
+                    document.getElementById('output').innerHTML = 'An error occurred calculating the route.';
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1><center>Enter your location details</center></h1>
+    
+    <div class="css">
+        <label><b>PICK-UP</b></label>
+        <input type="text" id="from" placeholder="From" name="from"><br>
+        <label><b>DROP</b></label>
+        <input type="text" id="to" placeholder="To" name="to">
+        <button id="routeButton">
+            <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 -960 960 960" width="40">
+                <path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/>
+            </svg>
+        </button>
+    </div>
+    <div id="myMap" style="position:relative;width:600px;height:400px;"></div>
+    <div id="output" style="display: none;"></div> <!-- Initially hidden -->
+    <form action="saveroute.php" method="post">
+        <input type="hidden" id="distance" name="distance"/>
+        <input type="hidden" id="hours" name="hours"/>
+        <input type="hidden" id="minutes" name="minutes"/>
+        <input type="hidden" id="money" name="money"/>
+        <input type="hidden" id="status" name="status"/>
+        <input type="hidden" id="from" name="from"/>
+        <input type="hidden" id="to" name="to"/>
+        <input type="hidden" id="driver" name="driver" value="<?php echo $driver;?>"/>
+        <button type="submit">Confirm Order</button>
+    </form>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="avail_cabs.css">
+</head>
+<body>
+        <table border="1" cellpadding="0">
+        <tr style="background-color: yellow">
+            <!-- <th>register_code</th> -->
+            <th>car</th>
+            <th>category</th>
+            <th>driver</th>
+            <th>booking info</th>
+            <!-- <th>address</th> -->
+            <!-- <th>operations</th> -->
+        </tr>
+
+        <?php
+        include "connection.php";
+       
+        $query="SELECT * FROM cars";
+        $data=mysqli_query($conn,$query);
+        $total=mysqli_num_rows($data);
+        $query2="SELECT driver FROM booking WHERE status>0";
+        $data2=mysqli_query($conn,$query2);
+        $total2=mysqli_num_rows($data2);
+    while($result=mysqli_fetch_assoc($data)){
+
+        while($result2=mysqli_fetch_assoc($data2)){
+            $out=$result2['driver'];
+            if($out==$result['driver'])
+            {
+            echo "
+            <tr>
+                <td>".$result['car']."</td>
+                <td>".$result['category']."</td>
+                <td>".$result['driver']."</td>
+                <td>
+                <form action ='location.php' method='get'>
+                <input type='hidden' name='driver' value='".$result['driver']."'>
+                <input type='hidden' name='car' value='".$result['car']."'>
+                <button type='submit' class='btn'>book</button>
+                </form>
+            </tr>
+            ";}
+        }
+    }
+        ?>
+    </table>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="avail_cabs.css">
+</head>
+<body>
+    <?php
+include "connection.php";
+        session_start();
+        session_destroy();
+        header("location:sample_login.html");
+        ?>
+ 
+    <table border="1" cellpadding="0">
+        <tr style="background-color: yellow">
+            <th>customer name</th>
+            <th>contact</th>
+            <th>location</th>
+            <th>duration</th>
+            <th>cost</th>
+            <th>status</th>
+        </tr>
+        <?php
+        
+        $user1=$_SESSION["username"];
+        $query = "SELECT * FROM booking where user='$user1'";
+        $data = mysqli_query($conn, $query);
+        
+        while($result = mysqli_fetch_assoc($data)){
+            echo "
+            <tr>
+                <td>".$result['user']."</td>
+                <td>".$result1['mobilenumber']."</td>
+                <td>from:".$result['from1']." to:".$result['to1']."</td>
+                <td>".$result['hours']." hours ".$result['minutes']." minutes</td>
+                <td>".$result['money']."</td>
+                <td>";
+                if ($result['status'] == 1) {
+                    $stat = "requested";
+                } elseif ($result['status'] == 2) {
+                    $stat = "picked-up";
+                } elseif ($result['status'] == 3) {
+                    $stat = "dropped";
+                } else {
+                    $stat = "dropped";
+                }
+                echo $stat;
+            
+            echo "</td></tr>";
+        }
+        ?>
+    </table>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="cars_css.css">
+</head>
+<body>
+    <?php
+    include "connection.php";
+    session_start();
+    $user1=$_SESSION["username"];
+    echo "<a href='booking.php?logout=".$user1."' class='btn'>log out</a>";
+    ?>
+    <table border="1" cellpadding="0">
+        <tr style="background-color: yellow">
+            <th>customer name</th>
+            <th>contact</th>
+            <th>location</th>
+            <th>duration</th>
+            <th>cost</th>
+            <th>status</th>
+        </tr>
+        <?php
+        
+        if(isset($_GET['id'])){ 
+            $id = mysqli_real_escape_string($conn, $_GET['id']);
+            $query2 = "SELECT status FROM booking where id='$id'";
+            $data2 = mysqli_query($conn, $query2);
+            $result2=mysqli_fetch_assoc($data2);
+            $id=$result2['status'];
+            if ($id == 1) {
+                $id = 2; // If status is 1, update to 2
+            } elseif ($id == 2) {
+                $id = 3; // If status is 2, update to 3
+            } elseif ($id == 3) {
+                $id = 4; // If status is 3, update to 4
+            }
+            $update = mysqli_query($conn, "UPDATE `booking` SET `status`='$id'");
+        }
+        if(isset($_GET['logout'])){
+            session_destroy();
+            header('Refresh: 0, url =/new%20project/sample_login.html');
+            exit();
+
+        }
+        
+        $query = "SELECT * FROM booking where driver='$user1'";
+        $data = mysqli_query($conn, $query);
+        
+        while($result = mysqli_fetch_assoc($data)){
+            $user = $result['user'];
+            $query1 = "SELECT mobilenumber FROM sample_login WHERE username='$user'";
+            $data1 = mysqli_query($conn, $query1);
+            $result1 = mysqli_fetch_assoc($data1);
+            echo "
+            <tr>
+                <td>".$result['user']."</td>
+                <td>".$result1['mobilenumber']."</td>
+                <td>from:".$result['from1']." to:".$result['to1']."</td>
+                <td>".$result['hours']." hours ".$result['minutes']." minutes</td>
+                <td>".$result['money']."</td>
+                <td>"; // Open PHP for conditional status display
+            if ($result['status'] == 1) {
+                $stat = "confirm";
+            } elseif ($result['status'] == 2) {
+                $stat = "pickedup";
+            } elseif ($result['status'] == 3){
+                $stat = "dropped";
+            }
+            else {
+                {
+                    $stat="thank you";
+                }
+            }
+            echo "<a href='booking.php?id=".$result['id']."' class='btn'>$stat</a>";
+            echo "</td></tr>";
+        }
+    
+        ?>
+    </table>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="avail_cabs.css">
+</head>
+<body>
+        <table border="1" cellpadding="0">
+        <tr style="background-color: yellow">
+            <!-- <th>register_code</th> -->
+            <th>car</th>
+            <th>category</th>
+            <th>driver</th>
+            <th>booking info</th>
+            <!-- <th>address</th> -->
+            <!-- <th>operations</th> -->
+        </tr>
+<?php
+include "connection.php";
+
+$query = "SELECT * FROM cars";
+$data = mysqli_query($conn, $query);
+
+while ($result = mysqli_fetch_assoc($data)) {
+    $query2 = "SELECT * FROM booking ";
+    $data2 = mysqli_query($conn, $query2);
+
+    while ($result2 = mysqli_fetch_assoc($data2)) {
+        if ($result['driver'] != $result2['driver'] && $result2['status']==1) {
+            echo "
+            <tr>
+                <td>".$result['car']."</td>
+                <td>".$result['category']."</td>
+                <td>".$result['driver']."</td>
+                <td>
+                    <form action='location.php' method='get'>
+                        <input type='hidden' name='driver' value='".$result['driver']."'>
+                        <input type='hidden' name='car' value='".$result['car']."'>
+                        <button type='submit' class='btn'>book</button>
+                    </form>
+                </td>
+
+            </tr>
+            ";
+            break;
+        }
+    }
+}
+?>
+ </table>
+</body>
+</html>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="cars_css.css">
+</head>
+<body>
+    <?php
+    include "connection.php";
+    session_start();
+    $user1=$_SESSION["username"];
+    echo "<a href='booking.php?logout=".$user1."' class='btn'>log out</a>";
+    ?>
+    <table border="1" cellpadding="0">
+        <tr style="background-color: yellow">
+            <th>customer name</th>
+            <th>contact</th>
+            <th>location</th>
+            <th>duration</th>
+            <th>cost</th>
+            <th>status</th>
+        </tr>
+        <?php
+        
+        if(isset($_GET['id'])){ 
+            $id = $_GET['id'];
+            $query2 = "SELECT status FROM booking where id='$id'";
+            $data2 = mysqli_query($conn, $query2);
+            $result2=mysqli_fetch_assoc($data2);
+            $id=$result2['status'];
+            echo $id;
+            if ($id == 1) {
+                $id = 2; // If status is 1, update to 2
+            } elseif ($id == 2) {
+                $id = 3; // If status is 2, update to 3
+            } elseif ($id == 3) {
+                $id = 4; // If status is 3, update to 4
+            }
+            $update = mysqli_query($conn, "UPDATE `booking` SET `status`='$id'");
+        }
+        if(isset($_GET['logout'])){
+            session_destroy();
+            header('Refresh: 0, url =/new%20project/sample_login.html');
+            exit();
+
+        }
+        
+        $query = "SELECT * FROM booking where driver='$user1'";
+        $data = mysqli_query($conn, $query);
+        
+        while($result = mysqli_fetch_assoc($data)){
+            $user = $result['user'];
+            $query1 = "SELECT mobilenumber FROM sample_login WHERE username='$user'";
+            $data1 = mysqli_query($conn, $query1);
+            $result1 = mysqli_fetch_assoc($data1);
+            echo "
+            <tr>
+                <td>".$result['user']."</td>
+                <td>".$result1['mobilenumber']."</td>
+                <td>from:".$result['from1']." to:".$result['to1']."</td>
+                <td>".$result['hours']." hours ".$result['minutes']." minutes</td>
+                <td>".$result['money']."</td>
+                <td>"; // Open PHP for conditional status display
+            if ($result['status'] == 0) {
+                $stat = "confirm";
+            } elseif ($result['status'] == 2) {
+                $stat = "pickedup";
+            } elseif ($result['status'] == 3){
+                $stat = "dropped";
+            }
+            else {
+                {
+                    $stat="thank you";
+                }
+            }
+            echo "<a href='booking.php?id=".$result['id']."' class='btn'>$stat</a>";
+            echo "</td></tr>";
+        }
+    
+        ?>
+    </table>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="booking.css">
+    <style>
+        .btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <table border="1" cellpadding="0">
+        <tr style="background-color: yellow">
+            <th>car</th>
+            <th>category</th>
+            <th>driver</th>
+            <th>booking info</th>
+        </tr>
+        <?php
+        include "connection.php";
+
+      //  $query="SELECT c.* from driver FROM cars c LEFT JOIN booking b ON b.driver = c.driver       WHERE b.driver IS NULL";
+//$query = "SELECT c.* FROM cars c LEFT JOIN booking b ON c.status = b.driver WHERE b.driver IS NULL";
+          // $SELECT * FROM cars c INNER JOIN booking b on b.status=c.cars or b.statusis th=0";
+          $query="SELECT DISTINCT c. * FROM cars c JOIN booking b ON c.status = b.status OR b.status = 3 OR b.status=0";
+
+$data = mysqli_query($conn, $query);
+    if (mysqli_num_rows($data) > 0) {
+
+        while ($result = mysqli_fetch_assoc($data)) {
+            if($result['status']==2){
+                echo"
+                <tr>
+                    <td>".$result['car']."</td>
+                    <td>".$result['category']."</td>
+                    <td>".$result['driver']."</td>
+                    <td>"."not available"."</td>
+                    ";
+            }
+            else{
+
+                echo "
+                <tr>
+                    <td>".$result['car']."</td>
+                    <td>".$result['category']."</td>
+                    <td>".$result['driver']."</td>
+                    <td>
+                        <form action='location.php' method='get'>
+                            <input type='hidden' name='driver' value='".$result['driver']."'>
+                            <input type='hidden' name='car' value='".$result['car']."'>
+                            <button type='submit' class='btn'>book</button>
+                        </form>
+                    </td>
+                </tr>
+                ";
+            }
+               
+                }
+            }
+
+            
+        
+        ?>
+    </table>
+</body> 
+</html>
+
+      

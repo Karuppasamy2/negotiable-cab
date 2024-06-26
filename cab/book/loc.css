@@ -1,0 +1,77 @@
+/* location.css */
+
+/* Center the h1 */
+h1 {
+    text-align: center;
+}
+
+/* Style for the container div */
+.css {
+    margin: 20px auto;
+    width: 300px;
+}
+
+/* Style for labels */
+.css label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Style for input fields */
+.css input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Style for the route button */
+#routeButton {
+    display: block;
+    margin: 0 auto;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Style for the map */
+#myMap {
+    margin: 20px auto;
+    width: 600px;
+    height: 400px;
+    position: relative;
+}
+
+/* Style for the output div */
+#output {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Style for the submit button */
+form {
+    text-align: center;
+    margin-top: 20px;
+}
+
+form button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}

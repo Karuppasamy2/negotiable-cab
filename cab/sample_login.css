@@ -1,0 +1,67 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ede6e6; /* Light gray background */
+    font-family: Arial, sans-serif; /* Use a common font */
+}
+
+.login-container {
+    width: 300px;
+    background-color: #fff; /* White background */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    padding: 20px;
+    text-align: center; /* Center the content */
+}
+
+.login-container h4 {
+    margin-bottom: 20px;
+    color: #333; /* Dark text color */
+}
+.login-container input[type="text"],
+.login-container input[type="password"],
+.login-container input[type="tel"],
+.login-container select {
+    width: calc(100% - 22px); /* Adjust for padding */
+    padding: 10px; /* Give space all over the box */
+    margin-bottom: 15px;
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 5px; /* Rounded corners */
+    outline: none; /* Remove outline */
+    background-color: #e6f0ff;
+}
+
+
+.login-container button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff; /* Blue button color */
+    color: #fff; /* White text color */
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+.login-container button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.a {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666; /* Gray text color */
+}
+
+.a a {
+    color: #007bff; /* Blue link color */
+    text-decoration: none;
+}
+
+.a a:hover {
+    text-decoration: underline;
+}
